@@ -1,0 +1,71 @@
+---
+// ArtistList.astro
+import type { Artist } from "../services/data"
+import ArtistComponent from "./Artist.astro"
+
+const apiUrl = import.meta.env.PUBLIC_API_URL || ""
+const url = `${apiUrl}/api/artists`
+
+const response = await fetch(url)
+const artists: Artist[] = await response.json()
+---
+
+<div
+  id="artist-list"
+  class="container max-w-[900px] mx-auto px-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-4 my-4"
+>
+  {
+    artists.map((artist) => (
+      <div class="w-full max-w-[250px] opacity-0 transform scale-95 transition-all duration-300 ease-out">
+        <ArtistComponent artist={artist} />
+      </div>
+    ))
+  }
+</div>
+
+<script define:vars={{ artists }}>
+  const artistList = document.getElementById("artist-list")
+
+  if (artistList) {
+    // Función para animar la aparición de las tarjetas
+    const animateCards = () => {
+      const cards = artistList.querySelectorAll("div > div")
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.classList.remove("opacity-0", "scale-95")
+          card.classList.add("opacity-100", "scale-100")
+        }, index * 100)
+      })
+    }
+
+    // Animar las tarjetas iniciales
+    animateCards()
+
+    document.addEventListener("search", (e) => {
+      if (e instanceof CustomEvent) {
+        const searchTerm = e.detail.toLowerCase()
+        const filteredArtists = artists.filter((artist) =>
+          artist.name.toLowerCase().includes(searchTerm)
+        )
+
+        artistList.innerHTML = ""
+        filteredArtists.forEach((artist) => {
+          const artistElement = document.createElement("div")
+          artistElement.className =
+            "w-full max-w-[250px] opacity-0 transform scale-95 transition-all duration-300 ease-out"
+          artistElement.innerHTML = `
+            <div class="bg-gray-800 p-4 rounded-lg">
+              <img src="${artist.profileImageUrl}" alt="${artist.name}" class="w-full h-48 object-cover rounded-lg mb-2">
+              <h2 class="text-xl font-bold">${artist.name}</h2>
+              <p class="text-gray-400">${artist.genre}</p>
+            </div>
+          `
+          artistList.appendChild(artistElement)
+        })
+
+        // Animar las nuevas tarjetas después de la búsqueda
+        animateCards()
+      }
+    })
+  }
+</script>
