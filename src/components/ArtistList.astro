@@ -1,26 +1,42 @@
 ---
-// ArtistList.astro
-import type { Artist } from "../services/data"
+import type { Artist } from "@services/data"
 import ArtistComponent from "./Artist.astro"
-
+import Modal from "./Modal.astro"
+import PlusButton from "./PlusButton.astro"
 const apiUrl = import.meta.env.PUBLIC_API_URL || ""
 const url = `${apiUrl}/api/artists`
 
 const response = await fetch(url)
 const artists: Artist[] = await response.json()
+
+const { title, limit } = Astro.props
 ---
 
-<div
-  id="artist-list"
-  class="container max-w-[900px] mx-auto px-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-4 my-4"
->
-  {
-    artists.map((artist) => (
-      <div class="w-full max-w-[250px] opacity-0 transform scale-95 transition-all duration-300 ease-out">
-        <ArtistComponent artist={artist} />
-      </div>
-    ))
-  }
+<div class="container flex flex-col justify-center items-center min-w-full">
+  <div class="flex justify-center items-start">
+    <h1 class="text-4xl text-white font-semibold" {title}></h1>
+  </div>
+
+  <div
+    id="artist-list"
+    class="mx-auto px-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-4 my-4"
+  >
+    {
+      limit
+        ? artists.slice(0, limit).map((artist) => (
+            <div class="w-full max-w-[250px] opacity-0 transform scale-95 transition-all duration-300 ease-out">
+              <ArtistComponent artist={artist} />
+            </div>
+          ))
+        : artists.map((artist) => (
+            <div class="w-full max-w-[250px] opacity-0 transform scale-95 transition-all duration-300 ease-out">
+              <ArtistComponent artist={artist} />
+            </div>
+          ))
+    }
+    <PlusButton />
+    <Modal />
+  </div>
 </div>
 
 <script define:vars={{ artists }}>
@@ -40,6 +56,16 @@ const artists: Artist[] = await response.json()
 
     // Animar las tarjetas iniciales
     animateCards()
+
+    document.getElementById("openModalButton").addEventListener("click", () => {
+      document.getElementById("modal").classList.remove("hidden")
+    })
+
+    document
+      .getElementById("closeModalButton")
+      .addEventListener("click", () => {
+        document.getElementById("modal").classList.add("hidden")
+      })
 
     document.addEventListener("search", (e) => {
       if (e instanceof CustomEvent) {
@@ -62,8 +88,6 @@ const artists: Artist[] = await response.json()
           `
           artistList.appendChild(artistElement)
         })
-
-        // Animar las nuevas tarjetas después de la búsqueda
         animateCards()
       }
     })

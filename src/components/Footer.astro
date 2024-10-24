@@ -1,0 +1,29 @@
+---
+const currentYear = new Date().getFullYear()
+const footerLinks = [
+  { text: "Inicio", href: "/" },
+  { text: "Política de privacidad", href: "/privacidad" },
+]
+---
+
+<footer class="bg-darkGray py-8 mt-32">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <p class="text-white text-sm mb-4 md:mb-0">
+        &copy; {currentYear} Trackify.
+      </p>
+      <nav class="flex flex-wrap justify-center">
+        {
+          footerLinks.map((link) => (
+            <a
+              href={link.href}
+              class="text-white hover:text-accent transition-colors duration-300 mx-2 my-1 text-sm"
+            >
+              {link.text}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</footer>

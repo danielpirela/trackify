@@ -2,14 +2,17 @@
 const { artist } = Astro.props
 ---
 
-<div class="bg-gray-800 p-4 rounded-lg">
+<div
+  class="bg-darkGray p-4 rounded-lg hover:scale-105 transition-all duration-300"
+>
   <img
     src={artist.profileImageUrl}
     alt={artist.name}
     class="w-full h-48 object-cover rounded-lg mb-2"
   />
-  <a href={artist.spotifyLink} class="text-xl font-bold hover:text-accent"
-    >{artist.name}</a
+  <a
+    href={artist.spotifyLink}
+    class="text-xl font-bold text-white hover:text-accent">{artist.name}</a
   >
   <p class="text-gray-400">{artist.genre}</p>
 </div>
